@@ -1,0 +1,41 @@
+.Battle {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+.battle-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border: 1px solid #000;
+    margin-top: 25%;
+}
+.submit-button {
+    /* width: 40%; */
+    margin-top: 10%;
+}
+
+.right-player, .left-player {
+    padding: 10%;
+}
+
+ul {
+    list-style: none;
+}
+
+.btn-attack {
+    width: 100%;
+}
+.Logs {
+    margin-top: 5%;
+    border: 1px solid #eee;
+    height: 400px;
+    width: 100%;
+}
+.battle-logs div {
+    padding: 10px;
+    border-bottom: 1px solid #000;
+}
+.battle-logs {
+    margin-top: 5%;
+    border: 1px solid #000;
+}
