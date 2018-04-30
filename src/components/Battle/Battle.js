@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import './Battle.css';
 
+import Timer from '../Timer/Timer';
 import Player from '../Player';
 
 let battleLogs = [];
@@ -163,6 +164,7 @@ class Battle extends Component {
          );
         return (
             <div>
+                <Timer />
             <div className="Battle">
                 <div className="left-player">
                     {this.state.winner === '' ? deathHandler() : 'winner is ' + this.state.winner}
