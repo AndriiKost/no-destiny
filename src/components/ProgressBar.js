@@ -4,7 +4,7 @@ import { Line } from 'rc-progress';
 const progressBar = (props) => {
     return (
         <div>
-            <Line percent="100" strokeWidth="3" strokeColor='#CB356B' />
+            <Line percent={props.hp} strokeWidth="3" strokeColor='#CB356B' />
         </div>
     )
 }

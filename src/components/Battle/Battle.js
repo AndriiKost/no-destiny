@@ -2,9 +2,7 @@ import React, { Component } from 'react';
 
 import './Battle.css';
 
-import LeftPlayer from '../LeftPlayer';
-import RightPlayer from '../RightPlayer';
-import Logs from '../Logs/Logs';
+import Player from '../Player';
 
 let battleLogs = [];
 
@@ -12,16 +10,16 @@ class Battle extends Component {
     state={
         leftPlayer: {
             name: 'LeftPlayer_PWNZ',
-            damage: 3,
+            damage: 33,
             armor: 5,
-            hitPoints: 25,
+            hitPoints: 100,
             img: "https://cdn1.iconfinder.com/data/icons/zeshio-s-fantasy-avatars/200/Fantasy_avatar_people-07-512.png"
         },
         rightPlayer: {
             name: 'RightPlayer_Boss',
-            damage: 1,
+            damage: 31,
             armor: 8,
-            hitPoints: 20,
+            hitPoints: 100,
             img: "https://cdn1.iconfinder.com/data/icons/zeshio-s-fantasy-avatars/200/Fantasy_avatar_people-17-512.png"
         },
         battle: {
@@ -36,9 +34,10 @@ class Battle extends Component {
         },
         attackSelectedOption: '',
         defendSelectedOption: '',
-        leftHP: 25,
-        rightHP: 20,
-        winner: ''
+        leftHP: 100,
+        rightHP: 100,
+        winner: '',
+        uiHelp: ''
     }
 
 
@@ -59,16 +58,19 @@ class Battle extends Component {
         const receiveDamage = this.state.rightPlayer.damage - this.state.leftPlayer.armor;
         if (this.state.attackSelectedOption === '' || this.state.defendSelectedOption === '') {
             console.log('Please select both atack and defend positions');
+            this.setState({
+                uiHelp: 'Please select attack and defend position'
+            })
         } else if (this.state.winner !== '') {
             return
         } else {
             this.state.battle.leftPlayer.attackSelectedOption = this.state.attackSelectedOption
             this.state.battle.leftPlayer.defendSelectedOption = this.state.defendSelectedOption
-            // this.calculateDamage()
 
             this.setState({
                 attackSelectedOption: '',
-                defendSelectedOption: ''
+                defendSelectedOption: '',
+                uiHelp: ''
             })
 
             this.buildLogString()
@@ -79,10 +81,10 @@ class Battle extends Component {
         let damage = 0;
         let punch = 0;
         if (this.state.battle.leftPlayer.attackSelectedOption !== this.state.battle.rightPlayer.defendSelectedOption) {
-            damage = this.state.rightPlayer.armor - this.state.leftPlayer.damage; 
+            damage = this.state.leftPlayer.damage - this.state.rightPlayer.armor; 
         } else { null }
         if (this.state.battle.rightPlayer.attackSelectedOption !== this.state.battle.leftPlayer.defendSelectedOption) {
-            punch = this.state.leftPlayer.armor - this.state.rightPlayer.damage;
+            punch = this.state.rightPlayer.damage - this.state.leftPlayer.armor;
         } else { null }
         if (this.state.battle.rightPlayer.attackSelectedOption === this.state.battle.leftPlayer.defendSelectedOption || this.state.battle.rightPlayer.attackSelectedOption === this.state.battle.leftPlayer.defendSelectedOption) {
             console.log('blocked')
@@ -100,81 +102,77 @@ class Battle extends Component {
             rightHP: this.state.rightHP - give
         })
      }
-
-    //  deathHandler = () => {
-    //     this.state.leftHP <= 0 ? this.setState({winner: this.state.rightPlayer.name}) : '';
-    //     this.state.rightHP <= 0 ? this.setState({winner: this.state.leftPlayer.name}) : '';
-    //     console.log(this.state.winner)
-    //     console.log(this.state.leftHP)
-    //     console.log(this.state.rightHP)
-    //  }
      
     render() {
         const deathHandler = () => {
             this.state.leftHP <= 0 ? this.setState({winner: this.state.rightPlayer.name}) : '';
             this.state.rightHP <= 0 ? this.setState({winner: this.state.leftPlayer.name}) : '';
          }
+
+        const form = (
+            <div className="battle-section">
+                    <div className="attack-field">
+                        <ul><h4>Attack</h4>
+                            <li><label>
+                                <input type="radio" value="head" 
+                                            checked={this.state.attackSelectedOption === 'head'} 
+                                            onChange={this.attackHandleOptionChange} />
+                                head
+                            </label></li>
+                            <li><label>
+                                <input type="radio" value="shoulders" 
+                                            checked={this.state.attackSelectedOption === 'shoulders'} 
+                                            onChange={this.attackHandleOptionChange} />
+                                shoulders
+                            </label></li>
+                            <li><label>
+                                <input type="radio" value="body" 
+                                            checked={this.state.attackSelectedOption === 'body'} 
+                                            onChange={this.attackHandleOptionChange} />
+                                body
+                            </label></li>
+                        </ul>
+                    </div>
+
+                    <div className="defent-field">
+                        <ul><h4>Protect</h4>
+                            <li><label>
+                                <input type="radio" value="head" 
+                                            checked={this.state.defendSelectedOption === 'head'} 
+                                            onChange={this.defendHandleOptionChange} />
+                                head
+                            </label></li>
+                            <li><label>
+                                <input type="radio" value="shoulders" 
+                                            checked={this.state.defendSelectedOption === 'shoulders'} 
+                                            onChange={this.defendHandleOptionChange} />
+                                shoulders
+                            </label></li>
+                            <li><label>
+                                <input type="radio" value="body" 
+                                            checked={this.state.defendSelectedOption === 'body'} 
+                                            onChange={this.defendHandleOptionChange} />
+                                body
+                            </label></li>
+                        </ul>
+                    </div>
+            
+                <button className="btn-attack" onClick={this.handleFormSubmit}>Attack</button>
+
+                </div>
+         );
         return (
             <div>
             <div className="Battle">
                 <div className="left-player">
                     {this.state.winner === '' ? deathHandler() : 'winner is ' + this.state.winner}
-                    <LeftPlayer player={this.state.leftPlayer} hp={this.state.leftHP}/>
+                    <Player player={this.state.leftPlayer} hp={this.state.leftHP}/>
                 </div>
-                <div className="battle-section">
-                {/* <form onSubmit={this.handleFormSubmit}> */}
-                <div className="attack-field">
-                    <ul><h4>Attack</h4>
-                        <li><label>
-                            <input type="radio" value="head" 
-                                        checked={this.state.attackSelectedOption === 'head'} 
-                                        onChange={this.attackHandleOptionChange} />
-                            head
-                        </label></li>
-                        <li><label>
-                            <input type="radio" value="shoulders" 
-                                        checked={this.state.attackSelectedOption === 'shoulders'} 
-                                        onChange={this.attackHandleOptionChange} />
-                            shoulders
-                        </label></li>
-                        <li><label>
-                            <input type="radio" value="body" 
-                                        checked={this.state.attackSelectedOption === 'body'} 
-                                        onChange={this.attackHandleOptionChange} />
-                            body
-                        </label></li>
-                    </ul>
-                </div>
-
-                <div className="defent-field">
-                    <ul><h4>Protect</h4>
-                        <li><label>
-                            <input type="radio" value="head" 
-                                        checked={this.state.defendSelectedOption === 'head'} 
-                                        onChange={this.defendHandleOptionChange} />
-                            head
-                        </label></li>
-                        <li><label>
-                            <input type="radio" value="shoulders" 
-                                        checked={this.state.defendSelectedOption === 'shoulders'} 
-                                        onChange={this.defendHandleOptionChange} />
-                            shoulders
-                        </label></li>
-                        <li><label>
-                            <input type="radio" value="body" 
-                                        checked={this.state.defendSelectedOption === 'body'} 
-                                        onChange={this.defendHandleOptionChange} />
-                            body
-                        </label></li>
-                    </ul>
-                </div>
-
-                <button className="btn-attack" onClick={this.handleFormSubmit}>Attack</button>
-
-                </div>
+                {form}
                 <div className="right-player">
-                    <RightPlayer player={this.state.rightPlayer} hp={this.state.rightHP}/>
+                    <Player player={this.state.rightPlayer} hp={this.state.rightHP}/>
                 </div>
+                {this.state.uiHelp !== ''  ? <div className="select-attack"><img src="https://vignette.wikia.nocookie.net/mkwikia/images/e/ed/Toasty_mk3.JPG/revision/latest?cb=20110310085358" width="10%" height="10%" /><label>select atacking and protecting positions to punch the enemy as much as you can</label></div> : null}
             </div>
             <div className="battle-logs">
                 {battleLogs.map((el) => {
