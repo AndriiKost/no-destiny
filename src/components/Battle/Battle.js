@@ -1,46 +1,43 @@
 import React, { Component } from 'react';
 
 import './Battle.css';
-
 import Timer from '../Timer/Timer';
 import Player from '../Player';
+
+import Players from '../../model/players';
 
 let battleLogs = [];
 
 class Battle extends Component {
-    state={
-        leftPlayer: {
-            name: 'LeftPlayer_PWNZ',
-            damage: 33,
-            armor: 5,
-            hitPoints: 100,
-            img: "https://cdn1.iconfinder.com/data/icons/zeshio-s-fantasy-avatars/200/Fantasy_avatar_people-07-512.png"
-        },
-        rightPlayer: {
-            name: 'RightPlayer_Boss',
-            damage: 31,
-            armor: 8,
-            hitPoints: 100,
-            img: "https://cdn1.iconfinder.com/data/icons/zeshio-s-fantasy-avatars/200/Fantasy_avatar_people-17-512.png"
-        },
-        battle: {
-            rightPlayer: {
-                attackSelectedOption: 'body',
-                defendSelectedOption: 'body'
+    constructor(props) {
+        super(props);
+        this.state = {
+            leftPlayer: {},
+            rightPlayer: {},
+            battle: {
+                rightPlayer: {
+                    attackSelectedOption: '',
+                    defendSelectedOption: ''
+                },
+                leftPlayer: {
+                    attackSelectedOption: '',
+                    defendSelectedOption: ''
+                }
             },
-            leftPlayer: {
-                attackSelectedOption: '',
-                defendSelectedOption: ''
-            }
-        },
-        attackSelectedOption: '',
-        defendSelectedOption: '',
-        leftHP: 100,
-        rightHP: 100,
-        winner: '',
-        uiHelp: ''
+            winner: '',
+            uiHelp: ''
+        }
     }
 
+    componentWillMount() {
+        const players = Players;
+        this.setState({
+            leftPlayer: players.leftPlayer,
+            rightPlayer: players.rightPlayer,
+            leftHP: players.leftHP,
+            rightHP: players.rightHP
+        })
+    }
 
     attackHandleOptionChange = (changeEvent) => {
         this.setState({
@@ -58,7 +55,6 @@ class Battle extends Component {
         const giveDamage = this.state.leftPlayer.damage - this.state.rightPlayer.armor;
         const receiveDamage = this.state.rightPlayer.damage - this.state.leftPlayer.armor;
         if (this.state.attackSelectedOption === '' || this.state.defendSelectedOption === '') {
-            console.log('Please select both atack and defend positions');
             this.setState({
                 uiHelp: 'Please select attack and defend position'
             })
@@ -69,8 +65,6 @@ class Battle extends Component {
             this.state.battle.leftPlayer.defendSelectedOption = this.state.defendSelectedOption
 
             this.setState({
-                attackSelectedOption: '',
-                defendSelectedOption: '',
                 uiHelp: ''
             })
 
@@ -78,9 +72,41 @@ class Battle extends Component {
         }
      }
 
+     randomizeAttack = () => {
+        const randomNum = this.getRandomInt(3);
+        switch (randomNum) {
+            case 0:
+                return 'head'
+            case 1:
+                return 'shoulders'
+            case 2:
+                return 'body'
+        }
+     }
+
+     randomizeDefense = () => {
+        const randomNum = this.getRandomInt(3);
+        switch (randomNum) {
+            case 0:
+                return 'head'
+            case 1:
+                return 'shoulders'
+            case 2:
+                return 'body'
+        }
+     }
+
+     getRandomInt = (max) => {
+        return Math.floor(Math.random() * Math.floor(max));
+      }
+
      buildLogString = () => {
         let damage = 0;
         let punch = 0;
+
+        this.state.battle.rightPlayer.attackSelectedOption = this.randomizeAttack();
+        this.state.battle.rightPlayer.defendSelectedOption = this.randomizeDefense();
+
         if (this.state.battle.leftPlayer.attackSelectedOption !== this.state.battle.rightPlayer.defendSelectedOption) {
             damage = this.state.leftPlayer.damage - this.state.rightPlayer.armor; 
         } else { null }
@@ -106,8 +132,15 @@ class Battle extends Component {
      
     render() {
         const deathHandler = () => {
-            this.state.leftHP <= 0 ? this.setState({winner: this.state.rightPlayer.name}) : '';
-            this.state.rightHP <= 0 ? this.setState({winner: this.state.leftPlayer.name}) : '';
+            if (this.state.leftHP <= this.state.rightHP && this.state.leftHP <= 0 && this.state.rightHP <= 0) {
+                this.setState({winner: 'Draw'})
+            } else if (this.state.leftHP <= 0) {
+                this.setState({winner: 'The winner is ' + this.state.rightPlayer.name})
+            } else if (this.state.rightHP <= 0) {
+                this.setState({winner: 'The winner is ' + this.state.leftPlayer.name})
+            }
+            // this.state.leftHP <= 0 ? this.setState({winner: this.state.rightPlayer.name}) : '';
+            // this.state.rightHP <= 0 ? this.setState({winner: this.state.leftPlayer.name}) : '';
          }
 
         const form = (
@@ -167,7 +200,7 @@ class Battle extends Component {
                 <Timer />
             <div className="Battle">
                 <div className="left-player">
-                    {this.state.winner === '' ? deathHandler() : 'winner is ' + this.state.winner}
+                    {this.state.winner === '' ? deathHandler() : this.state.winner}
                     <Player player={this.state.leftPlayer} hp={this.state.leftHP}/>
                 </div>
                 {form}

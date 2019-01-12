@@ -5,7 +5,7 @@ import './Timer.css';
 class Timer extends Component {
     state = {
         timer: null,
-        counter: 5
+        counter: 45
     };
 
     componentDidMount() {
